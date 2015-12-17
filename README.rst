@@ -1,4 +1,8 @@
 CSCP (Continuous scp)
 =====================
 
-Continuously run scp for every change on destination.
+Continuously run rsync everytime source directory changes.
+
+::
+
+   cscp /Users/huseyin/redbeacon/hdsem/ addv3:/home/huseyin/redbeacon/hdsem
