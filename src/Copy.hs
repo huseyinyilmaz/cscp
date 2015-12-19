@@ -2,24 +2,33 @@
 
 module Copy where
 
-import Control.Concurrent (threadDelay)
+import Control.Concurrent (threadDelay, forkIO)
+import Control.Concurrent.MVar (newMVar, tryTakeMVar, putMVar)
+import Data.Maybe (isJust)
 import qualified Data.Text as T
 import System.FSNotify
 import Turtle
 
+
 data SyncInfo = SyncInfo {source::Text, destination::Text} deriving (Show)
+
 
 watch :: (SyncInfo -> IO()) -> SyncInfo -> IO ()
 watch f s = do
+  lock <- newMVar ()
   withManager $ \mgr -> do
     putStrLn $ "SyncInfo: " ++  (show s)
     -- start a watching job (in the background)
-    watchTree
+    void $ watchTree
       mgr          -- manager
       ((T.unpack.source) s)          -- directory to watch
       (const True) -- predicate
-      (\_->f s)        -- action
-
+      (\_-> void $ forkIO $ do
+          took <- tryTakeMVar lock
+          when (isJust took) $ do putStrLn "Change detected"
+                                  threadDelay (1 * 1000 * 1000)
+                                  f s -- action
+                                  putMVar lock ())
     -- sleep forever (until interrupted)
     forever $ threadDelay 1000000
 
