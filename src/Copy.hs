@@ -25,10 +25,11 @@ watch f s = do
       (const True) -- predicate
       (\_-> void $ forkIO $ do
           took <- tryTakeMVar lock
-          when (isJust took) $ do putStrLn "Change detected"
-                                  threadDelay (1 * 1000 * 1000)
-                                  f s -- action
-                                  putMVar lock ())
+          when (isJust took) $ do
+            putStrLn "Change detected"
+            threadDelay (1 * 1000 * 1000)
+            f s -- action
+            putMVar lock ())
     -- sleep forever (until interrupted)
     forever $ threadDelay 1000000
 
