@@ -36,5 +36,5 @@ watch f s = do
 rsync :: SyncInfo -> Shell Text
 rsync syncInfo = do
   (echo . T.pack . show) syncInfo
-  inproc "rsync" ["-arPvz", "--exclude", ".git", "--exclude","*.pyc",
+  inproc "rsync" ["-arPvz", "--exclude", ".git", "--exclude","*.pyc", "--delete",
                   (source syncInfo), (destination syncInfo)] empty
