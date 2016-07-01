@@ -2,18 +2,22 @@
 module Lib (run) where
 
 import Turtle
+import qualified Data.Text as Text
 import Copy--(rsync, SyncInfo)
-import qualified Data.Text as T
 
-parser :: Parser (Text, Text)
-parser = (,) <$> (argText "source" "source directory to copy")
-             <*> argText "destination" "destination directory to copy"
+parser :: Parser (Text, Text, Text)
+parser = (,,) <$> (argText "source" "source directory to copy")
+              <*> (argText "destination" "destination directory to copy")
+              <*> (optText "exclude" 'e' "Exclude Following Paths(Coma separated List)")
 
 run :: IO ()
 run = do
-  (src, dst) <- options
+  (src, dst, rawEx) <- options
     "Continuesly copies source directory to given destinatio directory"
     parser
-  let syncInfo = SyncInfo{source=src, destination=dst}
+  let excludes =  Text.splitOn "," rawEx
+  let syncInfo = SyncInfo{source=src,
+                          destination=dst,
+                          excludes=excludes}
   view $ rsync syncInfo
   watch (view.rsync) syncInfo
