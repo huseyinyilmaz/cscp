@@ -5,6 +5,7 @@ import Turtle
 import qualified Data.Text as Text
 import Copy--(rsync, SyncInfo)
 
+-- https://github.com/Gabriel439/Haskell-Turtle-Library/issues/158
 parser :: Parser (Text, Text, [Text])
 parser = (,,) <$> (argText "source" "source directory to copy")
               <*> (argText "destination" "destination directory to copy")
