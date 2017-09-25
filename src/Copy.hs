@@ -47,7 +47,7 @@ toExcludeList exs= do
 -- run rsync command
 rsync :: MonadIO io => SyncInfo -> io ()
 rsync syncInfo = do
-  let args = (["-arPvz"] ++
+  let args = (["-arPLvz"] ++
               (toExcludeList $ excludes syncInfo) ++
               ["--delete", (source syncInfo), (destination syncInfo)])
   viewText $ inproc "rsync" args empty
